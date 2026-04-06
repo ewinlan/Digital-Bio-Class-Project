@@ -18,17 +18,24 @@ mkdir Class_Project
 
 # create an environment for rnaseq 
 
-conda create -n rnaseq -c conda-forge -c bioconda entrez-direct sra-tools==2.9.6 fastqc seqtk star samtools subread
+conda create -n rnaseq -c conda-forge -c bioconda entrez-direct sra-tools==3.4.1 fastqc seqtk star samtools subread
 
 # activate rnaseq environment 
 
 conda activate rnaseq
 
-# Download files from GEO... accessions GSM7006735,GSM7006738, GSM7006741, GSM7006745, GSM7006749
+# Download files from GEO
 # To do this, go to GEO, look up your accession (GSE223919 in this case), then click the run selector link at the bottom of page
-# Then, write doen the SRR files you want to download
+# Then, write down the SRR files you want to download
 # in terminal, use prefetch to download files one by one, or use for loop:
 
-prefetch <SRR number>
 
-#obtain fastq files
+prefetch SRR23261295
+prefetch SRR23261292
+prefetch SRR23261290
+prefetch SRR23261288
+prefetch SRR23261286
+prefetch SRR23261284
+prefetch SRR23261282
+
+# obtain fastq files
