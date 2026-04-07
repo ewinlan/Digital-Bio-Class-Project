@@ -1,0 +1,71 @@
+# ssh into quartz and request compute node
+# Minicona install
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+bash Miniconda3-latest-Linux-x86_64.sh
+
+# SRA tools install
+
+conda install -c bioconda sra-tools
+
+# Go to slate
+
+cd /N/slate/ewinlan
+
+# make a class project directory
+
+mkdir Class_Project
+
+# create an environment for rnaseq 
+
+conda create -n rnaseq -c conda-forge -c bioconda entrez-direct sra-tools==3.4.1 fastqc seqtk star samtools subread
+
+# activate rnaseq environment 
+
+conda activate rnaseq
+
+# Download files from GEO
+# To do this, go to GEO, look up your accession (GSE223919 in this case), then click the run selector link at the bottom of page
+# Then, write down the SRR files you want to download
+# in terminal, use prefetch to download files one by one, or use for loop:
+
+prefetch SRR23261298
+prefetch SRR23261295
+prefetch SRR23261292
+prefetch SRR23261290
+prefetch SRR23261288
+prefetch SRR23261286
+prefetch SRR23261284
+prefetch SRR23261282
+
+# obtain fastq files... if personal rnaseq environment is not working, use class environment
+# I submitted the following job script:
+#!/bin/bash
+#SBATCH --account=c01988
+#SBATCH --time=08:00:00
+#SBATCH --job-name=fastq_dump
+#SBATCH --output=fastq_dump_%j.out
+#SBATCH --error=fastq_dump_%j.err
+
+### Load conda and activate your environment
+module load conda
+conda activate /N/scratch/chriscs/Public/Conda_032726_QUARTZ/envs/Db/
+
+### Go to working directory (important!)
+cd /N/slate/ewinlan/Class_Project/
+
+### Convert SRR files to FASTQ
+for srr in SRR23261286 SRR23261288 SRR23261290 SRR23261292 SRR23261295 SRR23261298
+do
+    echo "Processing $srr"
+    fastq-dump --outdir /N/slate/ewinlan/Class_Project/fastq_files \
+               --skip-technical \
+               --readids \
+               --read-filter pass \
+               --dumpbase \
+               --split-3 \
+               --clip \
+               "$srr"
+done
+
+echo "Done."
