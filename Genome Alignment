@@ -1,1 +1,34 @@
+# ssh into quartz, request compute node, and load class conda environment
+conda activate /N/scratch/chriscs/Public/Conda_032726_QUARTZ/envs/Db/
 
+# create directory for genome files in class project folder
+mkdir genome_files
+
+# variables
+
+# Download genome assembly
+# Had to manually download and scp from worm base using this link: https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/
+# The assembly file was automatically unzipped when downloaded, so it was named: c_elegans.PRJNA13758.WS275.genomic.fa
+# changed name to assembly.fasta for simplicity
+
+mv c_elegans.PRJNA13758.WS275.genomic.fa assembly.fasta
+
+# Download genome annotation
+# same deal as assembly file, downloaded and renamed
+# original file was named c_elegans.PRJNA13758.WS275.canonical_geneset.gtf from https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/
+
+mv c_elegans.PRJNA13758.WS275.canonical_geneset.gtf annotation.gtf
+
+# make directory for genome indexes
+
+mkdir genome_files/genome_index
+
+# create STAR genome index
+
+STAR \
+  --runThreadN 4 \
+  --runMode genomeGenerate \
+  --genomeDir genome/index \
+  --genomeFastaFiles genome/assembly.fasta \
+  --sjdbGTFfile genome/annotation.gtf \
+  --genomeSAindexNbases 12
