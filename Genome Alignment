@@ -28,7 +28,116 @@ mkdir genome_files/genome_index
 STAR \
   --runThreadN 4 \
   --runMode genomeGenerate \
-  --genomeDir genome/index \
-  --genomeFastaFiles genome/assembly.fasta \
-  --sjdbGTFfile genome/annotation.gtf \
+  --genomeDir genome_files/genome_index \
+  --genomeFastaFiles genome_files/assembly.fasta \
+  --sjdbGTFfile genome_files/annotation.gtf \
   --genomeSAindexNbases 12
+
+# align reads to reference
+# I submitted this as a job
+
+
+#!/bin/bash
+#SBATCH -J star_align
+#SBATCH -A c01988
+#SBATCH -p general
+#SBATCH -N 1
+#SBATCH -n 8
+#SBATCH --mem=32G
+#SBATCH -t 08:00:00
+#SBATCH -o star_align_%j.out
+#SBATCH -e star_align_%j.err
+
+conda activate /N/u/ewinlan/Quartz/miniconda3/envs/rnaseq
+
+GENOME_DIR="/N/slate/ewinlan/Class_Project/genome_files/genome_index"
+FASTQ_DIR="/N/slate/ewinlan/Class_Project/fastq_files"
+OUT_DIR="/N/slate/ewinlan/Class_Project/aligned_reads"
+
+echo "Job started at: $(date)"
+echo "Working directory: $(pwd)"
+echo "Genome index: $GENOME_DIR"
+echo "FASTQ directory: $FASTQ_DIR"
+echo "Output directory: $OUT_DIR"
+
+for FASTQ in "$FASTQ_DIR"/*.fastq; do
+    BASENAME=$(basename "$FASTQ" .fastq)
+    PREFIX="$OUT_DIR/${BASENAME}_"
+
+    echo "Aligning $FASTQ"
+
+    STAR \
+      --runThreadN 8 \
+      --outFilterMultimapNmax 1 \
+      --outFilterScoreMinOverLread 0.66 \
+      --outFilterMismatchNmax 10 \
+      --outFilterMismatchNoverLmax 0.3 \
+      --runMode alignReads \
+      --genomeDir "$GENOME_DIR" \
+      --readFilesIn "$FASTQ" \
+      --outFileNamePrefix "$PREFIX" \
+      --outSAMattributes All \
+      --outSAMtype BAM SortedByCoordinate
+done
+
+echo "Job finished at: $(date)"
+
+# index the resulting BAM files 
+# do this inside of directpry containing the BAM files
+
+# Loop through BAM files
+for BAM in "$BAM_DIR"/*.bam; do
+    samtools index "$BAM"
+done
+
+# count reads... I submitted the following job since I was in between things
+
+#!/bin/bash
+#SBATCH -J featurecounts
+#SBATCH -A c01988
+#SBATCH -p general
+#SBATCH -N 1
+#SBATCH -n 8
+#SBATCH --mem=16G
+#SBATCH -t 04:00:00
+#SBATCH -o featurecounts_%j.out
+#SBATCH -e featurecounts_%j.err
+
+# Activate conda
+source /N/u/ewinlan/Quartz/miniconda3/etc/profile.d/conda.sh
+conda activate /N/u/ewinlan/Quartz/miniconda3/envs/rnaseq
+
+# Paths
+BAM_DIR="/N/slate/ewinlan/Class_Project/aligned_reads"
+ANNOTATION="/N/slate/ewinlan/Class_Project/genome_files/annotation.gtf"
+OUT_DIR="/N/slate/ewinlan/Class_Project/read_counts"
+
+echo "Job started at: $(date)"
+echo "Working directory: $(pwd)"
+
+# Collect BAM files
+BAMS=$(ls "$BAM_DIR"/*.bam)
+
+# Run featureCounts
+featureCounts \
+  -a "$ANNOTATION" \
+  -o "$OUT_DIR/counts.tsv" \
+  -t gene \
+  -g gene_id \
+  --largestOverlap \
+  --readExtension3 150 \
+  --primary \
+  -s 2 \
+  -T 8 \
+  $BAMS
+
+echo "Job finished at: $(date)"
+
+# count number of uniquely mapped reads 
+
+head SRR23261282_pass_Log.final.out
+
+# do this for all files.
+
+
+
