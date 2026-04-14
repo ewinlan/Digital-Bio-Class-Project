@@ -9,7 +9,7 @@ mkdir genome_files
 # Download genome assembly
 # Had to manually download and scp from worm base using this link: https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/
 # The assembly file was automatically unzipped when downloaded, so it was named: c_elegans.PRJNA13758.WS275.genomic.fa
-# changed name to assembly.fasta for simplicity
+# changed name to assembly.fasta for
 
 mv c_elegans.PRJNA13758.WS275.genomic.fa assembly.fasta
 
@@ -34,8 +34,7 @@ STAR \
   --genomeSAindexNbases 12
 
 # align reads to reference
-# I submitted this as a job
-
+# I submitted this as a job using the following script:
 
 #!/bin/bash
 #SBATCH -J star_align
@@ -83,14 +82,14 @@ done
 echo "Job finished at: $(date)"
 
 # index the resulting BAM files 
-# do this inside of directpry containing the BAM files
+# do this inside of directory containing the BAM files
 
 # Loop through BAM files
 for BAM in "$BAM_DIR"/*.bam; do
     samtools index "$BAM"
 done
 
-# count reads... I submitted the following job since I was in between things
+# count reads... I submitted the following job since I was in between things and had to step away from my laptop... this does not have to be done as a job though
 
 #!/bin/bash
 #SBATCH -J featurecounts
@@ -137,7 +136,7 @@ echo "Job finished at: $(date)"
 
 head SRR23261282_pass_Log.final.out
 
-# do this for all files.
+# do this for all files and take note of the percentages.
 
 
 
