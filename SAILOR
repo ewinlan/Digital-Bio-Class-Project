@@ -12,7 +12,7 @@ cp *bam /N/slate/ewinlan/Class_Project/sailor
 
 module load samtools
 
-samtools merge output.bam input1.bam input2.bam
+samtools merge adr2_merged.bam SRR23261282_pass_Aligned.sortedByCoord.out.bam SRR23261290_pass_Aligned.sortedByCoord.out.bam SRR23261286_pass_Aligned.sortedByCoord.out.bam
 
 # in genome files directory, copy assembly genome file into sailor directory
 
@@ -26,6 +26,12 @@ cp /N/project/HundleyLab/annotations/c.elegans.WS275.snps.nostrand.sorted.bed /N
 
 cp -r /N/project/HundleyLab/FLARE/workflow_sailor /N/slate/ewinlan/Class_Project
 
+# at this point, you should have your bam files (decide fif you need to merge them depending on your analysis. In this case, I merged the adr-2(-) replicates), the assembly genome files, and the sailor code.
+
+# now, in whatever directory you want, make a sialor output directory. 
+
+mkdir /N/slate/ewinlan/Class_Project/sailor/outputs
+
 # SAILOR is run by replacing variable names (file names, etc.) in a .json file that calls and runs the SAILOR script. We have the base .json, you just need to edit it to be specific for your analysis
 
 nano cp_sailor.json
@@ -34,7 +40,12 @@ nano cp_sailor.json
 
  "samples_path":"/N/slate/ewinlan/Class_Project/sailor/",
   "samples": [
-    "GSF4254-N2.merged.bam",  # List bam files here
+    "adr2_merged.bam",
+    "SRR23261284_pass_Aligned.sortedByCoord.out.bam",
+    "SRR23261288_pass_Aligned.sortedByCoord.out.bam",
+    "SRR23261292_pass_Aligned.sortedByCoord.out.bam",
+    "SRR23261295_pass_Aligned.sortedByCoord.out.bam",
+    "SRR23261298_pass_Aligned.sortedByCoord.out.bam"
   ],
   "reverse_stranded":true,  # This depends on your library prep and sequencing machine
   "reference_fasta": "/N/slate/ewinlan/Class_Project/genome_files/assembly.fasta",
@@ -43,4 +54,22 @@ nano cp_sailor.json
   "output_dir": "/N/slate/ewinlan/Class_Project/sailor/outputs"
 }
 
-# now we are ready to run the snakefile
+# now we are ready to run the snakefile, but I had to install snakemake first, and we need to load apptainer
+
+module load apptainer
+
+conda install -c conda-forge -c bioconda snakemake
+
+snakemake \
+  --snakefile /N/slate/ewinlan/Class_Project/sailor/workflow_sailor/Snakefile \
+  --configfile /N/slate/ewinlan/Class_Project/sailor/cp_sailor.json \
+  --use-singularity \
+  --singularity-args "\
+    --bind /N/slate/ewinlan/Class_Project \
+    --bind /N/slate/ewinlan/Class_Project/genome_files \
+    --bind /N/slate/ewinlan/Class_Project/sailor/workflow_sailor/scripts \
+    --bind /N/slate/ewinlan/Class_Project/sailor/workflow_sailor \
+    --bind /N/slate/ewinlan/Class_Project/sailor/outputs" \
+  -j1
+
+
