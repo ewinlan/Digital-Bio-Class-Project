@@ -1,0 +1,140 @@
+# ssh into quartz, request compute node, and load class conda environment
+conda activate /N/scratch/chriscs/Public/Conda_032726_QUARTZ/envs/Db/
+
+# create directory for genome files in class project folder
+mkdir genome_files
+
+# variables
+
+# Download genome assembly
+# Had to manually download and scp from worm base using this link: https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/
+# The assembly file was automatically unzipped when downloaded, so it was named: c_elegans.PRJNA13758.WS275.genomic.fa
+# changed name to assembly.fasta for
+
+mv c_elegans.PRJNA13758.WS275.genomic.fa assembly.fasta
+
+# Download genome annotation
+# same deal as assembly file, downloaded and renamed
+# original file was named c_elegans.PRJNA13758.WS275.canonical_geneset.gtf from https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/
+
+mv c_elegans.PRJNA13758.WS275.canonical_geneset.gtf annotation.gtf
+
+# make directory for genome indexes
+
+mkdir genome_files/genome_index
+
+# create STAR genome index
+
+STAR \
+  --runThreadN 4 \
+  --runMode genomeGenerate \
+  --genomeDir genome_files/genome_index \
+  --genomeFastaFiles genome_files/assembly.fasta \
+  --sjdbGTFfile genome_files/annotation.gtf \
+  --genomeSAindexNbases 12
+
+# align reads to reference
+# I submitted this as a job using the following script:
+
+#!/bin/bash
+#SBATCH -J star_align
+#SBATCH -A c01988
+#SBATCH -p general
+#SBATCH -N 1
+#SBATCH -n 8
+#SBATCH --mem=32G
+#SBATCH -t 08:00:00
+#SBATCH -o star_align_%j.out
+#SBATCH -e star_align_%j.err
+
+conda activate /N/u/ewinlan/Quartz/miniconda3/envs/rnaseq
+
+GENOME_DIR="/N/slate/ewinlan/Class_Project/genome_files/genome_index"
+FASTQ_DIR="/N/slate/ewinlan/Class_Project/fastq_files"
+OUT_DIR="/N/slate/ewinlan/Class_Project/aligned_reads"
+
+echo "Job started at: $(date)"
+echo "Working directory: $(pwd)"
+echo "Genome index: $GENOME_DIR"
+echo "FASTQ directory: $FASTQ_DIR"
+echo "Output directory: $OUT_DIR"
+
+for FASTQ in "$FASTQ_DIR"/*.fastq; do
+    BASENAME=$(basename "$FASTQ" .fastq)
+    PREFIX="$OUT_DIR/${BASENAME}_"
+
+    echo "Aligning $FASTQ"
+
+    STAR \
+      --runThreadN 8 \
+      --outFilterMultimapNmax 1 \
+      --outFilterScoreMinOverLread 0.66 \
+      --outFilterMismatchNmax 10 \
+      --outFilterMismatchNoverLmax 0.3 \
+      --runMode alignReads \
+      --genomeDir "$GENOME_DIR" \
+      --readFilesIn "$FASTQ" \
+      --outFileNamePrefix "$PREFIX" \
+      --outSAMattributes All \
+      --outSAMtype BAM SortedByCoordinate
+done
+
+echo "Job finished at: $(date)"
+
+# index the resulting BAM files 
+# do this inside of directory containing the BAM files
+
+# Loop through BAM files
+for BAM in "$BAM_DIR"/*.bam; do
+    samtools index "$BAM"
+done
+
+# count reads... I submitted the following job since I was in between things and had to step away from my laptop... this does not have to be done as a job though
+
+#!/bin/bash
+#SBATCH -J featurecounts
+#SBATCH -A c01988
+#SBATCH -p general
+#SBATCH -N 1
+#SBATCH -n 8
+#SBATCH --mem=16G
+#SBATCH -t 04:00:00
+#SBATCH -o featurecounts_%j.out
+#SBATCH -e featurecounts_%j.err
+
+# Activate conda
+source /N/u/ewinlan/Quartz/miniconda3/etc/profile.d/conda.sh
+conda activate /N/u/ewinlan/Quartz/miniconda3/envs/rnaseq
+
+# Paths
+BAM_DIR="/N/slate/ewinlan/Class_Project/aligned_reads"
+ANNOTATION="/N/slate/ewinlan/Class_Project/genome_files/annotation.gtf"
+OUT_DIR="/N/slate/ewinlan/Class_Project/read_counts"
+
+echo "Job started at: $(date)"
+echo "Working directory: $(pwd)"
+
+# Collect BAM files
+BAMS=$(ls "$BAM_DIR"/*.bam)
+
+# Run featureCounts
+featureCounts \
+  -a "$ANNOTATION" \
+  -o "$OUT_DIR/counts.tsv" \
+  -t gene \
+  -g gene_id \
+  --largestOverlap \
+  --readExtension3 150 \
+  --primary \
+  -s 2 \
+  -T 8 \
+  $BAMS
+
+echo "Job finished at: $(date)"
+
+# count number of uniquely mapped reads 
+
+head SRR23261282_pass_Log.final.out
+
+# do this for all files and take note of the percentages.
+
