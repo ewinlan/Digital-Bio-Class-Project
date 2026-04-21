@@ -1,15 +1,19 @@
 # ssh into quartz, request compute node, and load class conda environment
 conda activate /N/scratch/chriscs/Public/Conda_032726_QUARTZ/envs/Db/
 
+# change into class project directory
+
+cd Class_project
+
 # create directory for genome files in class project folder
-mkdir genome_files
+mkdir -p genome_files
 
 # variables
 
 # Download genome assembly
-# Had to manually download and scp from worm base using this link: https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/
+# Had to manually download and scp from worm base using this link (wget was not working... the website is ancient): https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/
 # The assembly file was automatically unzipped when downloaded, so it was named: c_elegans.PRJNA13758.WS275.genomic.fa
-# changed name to assembly.fasta for
+# changed name to assembly.fasta for simplicity
 
 mv c_elegans.PRJNA13758.WS275.genomic.fa assembly.fasta
 
@@ -19,9 +23,11 @@ mv c_elegans.PRJNA13758.WS275.genomic.fa assembly.fasta
 
 mv c_elegans.PRJNA13758.WS275.canonical_geneset.gtf annotation.gtf
 
-# make directory for genome indexes
+# make directory for genome indexes, fastqs, and aligned reads
 
-mkdir genome_files/genome_index
+mkdir -p genome_files/genome_index
+mkdir -p fastq_files
+mkdir -p aligned_reads
 
 # create STAR genome index
 
@@ -47,11 +53,13 @@ STAR \
 #SBATCH -o star_align_%j.out
 #SBATCH -e star_align_%j.err
 
+cd Class_Project
+
 conda activate /N/u/ewinlan/Quartz/miniconda3/envs/rnaseq
 
-GENOME_DIR="/N/slate/ewinlan/Class_Project/genome_files/genome_index"
-FASTQ_DIR="/N/slate/ewinlan/Class_Project/fastq_files"
-OUT_DIR="/N/slate/ewinlan/Class_Project/aligned_reads"
+GENOME_DIR="genome_files/genome_index"
+FASTQ_DIR="fastq_files"
+OUT_DIR="aligned_reads"
 
 echo "Job started at: $(date)"
 echo "Working directory: $(pwd)"
@@ -89,7 +97,10 @@ for BAM in "$BAM_DIR"/*.bam; do
     samtools index "$BAM"
 done
 
-# count reads... I submitted the following job since I was in between things and had to step away from my laptop... this does not have to be done as a job though
+# count reads... I submitted the following job since I was in between things and had to step away from my laptop... this does not have to be done as a job though. It is quick.
+# make a directory for read counts
+
+mkdir -p read_counts
 
 #!/bin/bash
 #SBATCH -J featurecounts
@@ -106,10 +117,12 @@ done
 source /N/u/ewinlan/Quartz/miniconda3/etc/profile.d/conda.sh
 conda activate /N/u/ewinlan/Quartz/miniconda3/envs/rnaseq
 
+cd Class_Project
+
 # Paths
-BAM_DIR="/N/slate/ewinlan/Class_Project/aligned_reads"
-ANNOTATION="/N/slate/ewinlan/Class_Project/genome_files/annotation.gtf"
-OUT_DIR="/N/slate/ewinlan/Class_Project/read_counts"
+BAM_DIR="aligned_reads"
+ANNOTATION="genome_files/annotation.gtf"
+OUT_DIR="Class_Project/read_counts"
 
 echo "Job started at: $(date)"
 echo "Working directory: $(pwd)"
