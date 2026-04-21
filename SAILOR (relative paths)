@@ -1,12 +1,14 @@
-#!/bin/bash
+cd Class_Project
 
 # make a directory for sailor
 
-mkdir sailor
+mkdir -p sailor
 
 # in aligned reads director, copy BAM files into sailor directory
 
-cp *bam /N/slate/ewinlan/Class_Project/sailor
+cd aligned_reads
+
+cp *bam /Class_Project/sailor
 
 # merge adr-2 bam files
 
@@ -16,7 +18,8 @@ samtools merge adr2_merged.bam SRR23261282_pass_Aligned.sortedByCoord.out.bam SR
 
 # in genome files directory, copy assembly genome file into sailor directory
 
- cp assembly.fasta /N/slate/ewinlan/Class_Project/sailor
+cd Class_Project/genome_files
+cp assembly.fasta /Class_Project/sailor
 
 # cp a bed file of known c. elegans SNPS into your own sailor directory from /N/project/HundleyLab/annotations
 
@@ -28,9 +31,9 @@ cp -r /N/project/HundleyLab/FLARE/workflow_sailor /N/slate/ewinlan/Class_Project
 
 # at this point, you should have your bam files (decide fif you need to merge them depending on your analysis. In this case, I merged the adr-2(-) replicates), the assembly genome files, and the sailor code.
 
-# now, in whatever directory you want, make a sialor output directory. 
+# now, in the sailor directory, make a sailor output directory. 
 
-mkdir /N/slate/ewinlan/Class_Project/sailor/outputs
+mkdir Class_Project/sailor/outputs
 
 # SAILOR is run by replacing variable names (file names, etc.) in a .json file that calls and runs the SAILOR script. We have the base .json, you just need to edit it to be specific for your analysis
 
@@ -38,7 +41,7 @@ nano cp_sailor.json
 
 # paste this code and adjust it to your needs. This is what I did for this analysis:
 
- "samples_path":"/N/slate/ewinlan/Class_Project/sailor/",
+ "samples_path":"/Class_Project/sailor/",
   "samples": [
     "adr2_merged.bam",
     "SRR23261284_pass_Aligned.sortedByCoord.out.bam",
@@ -48,10 +51,10 @@ nano cp_sailor.json
     "SRR23261298_pass_Aligned.sortedByCoord.out.bam"
   ],
   "reverse_stranded":true,  # This depends on your library prep and sequencing machine
-  "reference_fasta": "/N/slate/ewinlan/Class_Project/genome_files/assembly.fasta",
-  "known_snps": "/N/slate/ewinlan/Class_Project/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
+  "reference_fasta": "/Class_Project/genome_files/assembly.fasta",
+  "known_snps": "/Class_Project/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
   "edit_type": "AG",  # The type of edits you're looking for (A to I edits would be AG here)
-  "output_dir": "/N/slate/ewinlan/Class_Project/sailor/outputs"
+  "output_dir": "/Class_Project/sailor/outputs"
 }
 
 # now we are ready to run the snakefile, but I had to install snakemake first, and we need to load apptainer
@@ -61,16 +64,16 @@ module load apptainer
 conda install -c conda-forge -c bioconda snakemake
 
 snakemake \
-  --snakefile /N/slate/ewinlan/Class_Project/sailor/workflow_sailor/Snakefile \
-  --configfile /N/slate/ewinlan/Class_Project/sailor/cp_sailor.json \
+  --snakefile /Class_Project/sailor/workflow_sailor/Snakefile \
+  --configfile /Class_Project/sailor/cp_sailor.json \
   --use-singularity \
   --singularity-args "\
-    --bind /N/slate/ewinlan/Class_Project \
-    --bind /N/slate/ewinlan/Class_Project/genome_files \
-    --bind /N/slate/ewinlan/Class_Project/sailor/workflow_sailor/scripts \
-    --bind /N/slate/ewinlan/Class_Project/sailor/workflow_sailor \
-    --bind /N/slate/ewinlan/Class_Project/sailor/outputs" \
+    --bind /Class_Project \
+    --bind /Class_Project/genome_files \
+    --bind /Class_Project/sailor/workflow_sailor/scripts \
+    --bind /Class_Project/sailor/workflow_sailor \
+    --bind /Class_Project/sailor/outputs" \
   -j1
 
 # run sailor annotation (do this for each individual file... example code of one of my files for this project below):
-python3 /N/slate/ewinlan/Class_Project/sailor/workflow_sailor_annotation/annotator.sailor.py --gtf /N/slate/ewinlan/Class_Project/genome_files/annotation.gtf --fwd /N/slate/ewinlan/Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --rev /N/slate/ewinlan/Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --wb /N/slate/ewinlan/Class_Project/genome_files/c.elegans.WS275.annotation.final.bed --o /N/slate/ewinlan/Class_Project/sailor/outputs/WT_PA14_SRR23261298.annotated.sites.csv
+python3 /Class_Project/sailor/workflow_sailor_annotation/annotator.sailor.py --gtf /Class_Project/genome_files/annotation.gtf --fwd /Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --rev /Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --wb /Class_Project/genome_files/c.elegans.WS275.annotation.final.bed --o /Class_Project/sailor/outputs/WT_PA14_SRR23261298.annotated.sites.csv
