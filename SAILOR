@@ -72,5 +72,5 @@ snakemake \
     --bind /N/slate/ewinlan/Class_Project/sailor/outputs" \
   -j1
 
-# run sailor annotation:
+# run sailor annotation (do this for each individual file... example code of one of my files for this project below):
 python3 /N/slate/ewinlan/Class_Project/sailor/workflow_sailor_annotation/annotator.sailor.py --gtf /N/slate/ewinlan/Class_Project/genome_files/annotation.gtf --fwd /N/slate/ewinlan/Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --rev /N/slate/ewinlan/Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --wb /N/slate/ewinlan/Class_Project/genome_files/c.elegans.WS275.annotation.final.bed --o /N/slate/ewinlan/Class_Project/sailor/outputs/WT_PA14_SRR23261298.annotated.sites.csv
