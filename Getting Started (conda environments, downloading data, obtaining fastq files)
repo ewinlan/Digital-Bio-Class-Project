@@ -12,7 +12,7 @@ conda install -c bioconda sra-tools
 
 cd /N/slate/ewinlan
 
-# make a class project directory
+# make a class project directory, this is my working dircetiry for this project.
 
 mkdir Class_Project
 
