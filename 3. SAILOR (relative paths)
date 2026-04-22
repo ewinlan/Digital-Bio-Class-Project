@@ -4,11 +4,12 @@ cd Class_Project
 
 mkdir -p sailor
 
-# in aligned reads director, copy BAM files into sailor directory
+# in aligned reads director, copy indexed and regular BAM files into sailor directory
 
 cd aligned_reads
 
 cp *bam /Class_Project/sailor
+cp *bai /Class_Project/sailor
 
 # merge adr-2 bam files
 
@@ -16,9 +17,13 @@ module load samtools
 
 samtools merge adr2_merged.bam SRR23261282_pass_Aligned.sortedByCoord.out.bam SRR23261290_pass_Aligned.sortedByCoord.out.bam SRR23261286_pass_Aligned.sortedByCoord.out.bam
 
+# index merged adr-2 bam file
+
+
+
 # in genome files directory, copy assembly genome file into sailor directory
 
-cd Class_Project/genome_files
+cd /Class_Project/genome_files
 cp assembly.fasta /Class_Project/sailor
 
 # cp a bed file of known c. elegans SNPS into your own sailor directory from /N/project/HundleyLab/annotations
@@ -50,10 +55,10 @@ nano cp_sailor.json
     "SRR23261295_pass_Aligned.sortedByCoord.out.bam",
     "SRR23261298_pass_Aligned.sortedByCoord.out.bam"
   ],
-  "reverse_stranded":true,  # This depends on your library prep and sequencing machine
+  "reverse_stranded":true,  
   "reference_fasta": "/Class_Project/genome_files/assembly.fasta",
   "known_snps": "/Class_Project/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
-  "edit_type": "AG",  # The type of edits you're looking for (A to I edits would be AG here)
+  "edit_type": "AG",  
   "output_dir": "/Class_Project/sailor/outputs"
 }
 
