@@ -1,4 +1,5 @@
 # in sailor directory
+module load rnaseq
 module load samtools
 
 for i in *.bam; do
@@ -79,9 +80,8 @@ for vcf in *_27Aug_rmdup.vcf; do
     # Run the python script with nohup in background
     nohup python variant_updatedLHK073025.py \
         --v "$vcf" \
-        --snp c.elegans.WS275.snps.sorted.bed \
+        --snp c.elegans.WS275.snps.nostrand.sorted.bed \
         --o "$outfile" > "$logfile" 2>&1 &
 
     echo "Started processing $vcf -> $outfile (logging to $logfile)"
 done
-
