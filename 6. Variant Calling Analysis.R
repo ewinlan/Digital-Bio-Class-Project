@@ -55,7 +55,7 @@ wtpa14_vc = rbind(wtpa14_rep1_vc, wtpa14_rep2_vc) %>%
 # Use your final SAILOR site list here
 
 wtop50_vc %>%
-  filter(chr_pos %in% n2_sites_list_final) %>%
+  filter(chr_pos %in% n2_sites_final) %>%
   distinct(chr_pos) %>%
   nrow()
 
@@ -69,17 +69,17 @@ wtop50_vc %>%
 # Create the table with only high confidence sites
 
 wtop50_vc_hc_sites = wtop50_vc %>%
-  filter(chr_pos %in% n2_sites_list_final)
+  filter(chr_pos %in% n2_sites_final)
 
 # Repeat for PA14; the site list stays the same
 
 wtpa14_vc %>%
-  filter(chr_pos %in% n2_sites_list_final) %>%
+  filter(chr_pos %in% n2_sites_final) %>%
   distinct(chr_pos) %>%
   nrow()
 
 wtpa14_vc %>%
-  filter(chr_pos %in% n2_sites_list_final) %>%
+  filter(chr_pos %in% n2_sites_final) %>%
   group_by(rep) %>%
   tally()
 
