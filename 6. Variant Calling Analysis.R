@@ -84,7 +84,7 @@ wtpa14_vc %>%
   tally()
 
 wtpa14_vc_hc_sites = wtpa14_vc %>%
-  filter(chr_pos %in% n2_sites_list_final)
+  filter(chr_pos %in% n2_sites_final)
 
 # Do the variant sites found in OP50 and PA14 overlap?
 # We can only compare sites that appear in both conditions.
