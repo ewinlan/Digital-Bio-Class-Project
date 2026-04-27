@@ -273,7 +273,7 @@ adr2_sites_list <- edit_sail %>%
   pull(chr_pos)
 
 ############################################################
-# OP50: remove adr-2(-) sites as likely false positives
+# OP50: remove adr-2(-) sites 
 ############################################################
 
 length(op50_sites_list)
@@ -304,7 +304,7 @@ op50_sites_final_position <- op50_sites_final %>%
   dplyr::select(chr_pos)
 
 ############################################################
-# PA14: remove adr-2(-) sites as likely false positives
+# PA14: remove adr-2(-) sites 
 ############################################################
 
 length(pa14_sites_list)
@@ -334,16 +334,6 @@ pa14_sites_final_position <- pa14_sites_final %>%
   distinct(chr_pos) %>%
   dplyr::select(chr_pos)
 
-############################################################
-# Optional: save final tables
-############################################################
 
-write.csv(op50_sites_final, "op50_sites_final.csv", row.names = FALSE)
-write.csv(pa14_sites_final, "pa14_sites_final.csv", row.names = FALSE)
-
-write.csv(op50_sites_final_position, "op50_sites_final_positions.csv", row.names = FALSE)
-write.csv(pa14_sites_final_position, "pa14_sites_final_positions.csv", row.names = FALSE)
-
-write.csv(feature_gene, "feature_gene_table.csv", row.names = FALSE)
 
 
