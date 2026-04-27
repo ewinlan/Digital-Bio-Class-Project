@@ -112,6 +112,15 @@ wtop50_wtpa14_sites = inner_join(wtop50_vc_hc_sites %>% distinct(chr_pos),
 # Confirm the number of overlapping sites matches above
 length(wtop50_wtpa14_sites)
 
+# filter for read coverage 
+vc = rbind(wtop50_vc, wtpa14_vc) %>%
+  filter(chr_pos %in% wtop50_wtpa14_sites) %>%
+  filter(coverage >= 10)  
+
+# Optional: check impact
+cat("Sites after coverage filter:",
+    vc %>% distinct(chr_pos) %>% nrow(), "\n")
+
 # Combine OP50 and PA14 variant dataframe and pull out only overlapping sites
 
 vc = rbind(wtop50_vc, wtpa14_vc) %>%
