@@ -1,4 +1,4 @@
-#ssh into quartz, request compute node, change into slate or scratch
+# ssh into quartz, request compute node, change into slate or scratch
 # Minicona install
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
@@ -11,6 +11,8 @@ conda install -c bioconda sra-tools
 # make a class project directory, this is my working directory for this project.
 
 mkdir -p Class_Project
+
+cd Class_Project
 
 # create an environment for rnaseq 
 
@@ -34,34 +36,18 @@ prefetch SRR23261286
 prefetch SRR23261284
 prefetch SRR23261282
 
-# obtain fastq files... had to use class environment for this, as my rnaseq environment sra tools is messed up. Troubleshoot later.
-# I submitted the following job script:
-#!/bin/bash
-#SBATCH --account=c01988
-#SBATCH --time=08:00:00
-#SBATCH --job-name=fastq_dump
-#SBATCH --output=fastq_dump_%j.out
-#SBATCH --error=fastq_dump_%j.err
-
-### Load conda and activate your environment
-module load conda
-conda activate /N/scratch/chriscs/Public/Conda_032726_QUARTZ/envs/Db/
-
-### Go to working directory 
-cd Class_Project/
-
-### Convert SRR files to FASTQ
-for srr in SRR23261286 SRR23261288 SRR23261290 SRR23261292 SRR23261295 SRR23261298
-do
+for srr in SRR23261286 SRR23261288 SRR23261290 SRR23261292 SRR23261295 SRR23261298; do
     echo "Processing $srr"
-    fastq-dump --outdir Class_Project/fastq_files \
-               --skip-technical \
-               --readids \
-               --read-filter pass \
-               --dumpbase \
-               --split-3 \
-               --clip \
-               "$srr"
-done
 
-echo "Done."
+    fastq-dump \
+        --outdir Class_Project/fastq_files \
+        --skip-technical \
+        --readids \
+        --read-filter pass \
+        --dumpbase \
+        --split-3 \
+        --clip \
+        "$srr"
+
+    echo "Finished $srr"
+done
