@@ -92,6 +92,8 @@ echo "Job finished at: $(date)"
 # index the resulting BAM files 
 # do this inside of directory containing the BAM files
 
+cd aligned_reads
+
 # Loop through BAM files
 for BAM in "$BAM_DIR"/*.bam; do
     samtools index "$BAM"
