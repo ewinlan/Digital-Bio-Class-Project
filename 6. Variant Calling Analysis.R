@@ -11,7 +11,7 @@ library(data.table)
 library(pheatmap)
 
 # Set working directory to wherever your variant CSV files are
-# setwd("/N/slate/ewinlan/Class_Project/your_variant_calling_folder")
+# setwd("/N/slate/ewinlan/Class_Project/sailor")
 
 # Renaming some of the columns and add a column denoting replicate
 
