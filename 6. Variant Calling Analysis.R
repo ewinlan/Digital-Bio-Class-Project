@@ -185,9 +185,9 @@ options(repr.plot.width = 5, repr.plot.height = 8)
 
 plot_variant_heatmap(vc_op50_pa14_final)
 
-####### to identify sites that either increased or decreased by 10%
+####### to identify sites that either increased or decreased by 10% #######
 
-> editing_10pct_changes <- vc_op50_pa14_final %>%
+editing_10pct_changes <- vc_op50_pa14_final %>%
 +   group_by(chr_pos, condition) %>%
 +   summarize(mean_editing = mean(per_variant, na.rm = TRUE),
 +             .groups = "drop") %>%
@@ -196,41 +196,33 @@ plot_variant_heatmap(vc_op50_pa14_final)
 +   mutate(
 +     diff_PA14_minus_OP50 = PA14 - OP50,
 +     change_direction = case_when(
-+       diff_PA14_minus_OP50 >= 0.10 ~ "Increased by >=10% in PA14",
-+       diff_PA14_minus_OP50 <= -0.10 ~ "Decreased by >=10% in PA14",
-+       TRUE ~ "Changed by <10%"
++       diff_PA14_minus_OP50 >= 10 ~ "Increased by ≥10%",
++       diff_PA14_minus_OP50 <= -10 ~ "Decreased by ≥10%",
++       TRUE ~ "Changed <10%"
 +     )
 +   )
 > editing_10pct_changes %>%
 +   count(change_direction)
-Warning: ‘timedatectl’ indicates the non-existent timezone name ‘n/a’
-Warning: Your system is mis-configured: ‘/etc/localtime’ is not a symlink
-Warning: It is strongly recommended to set envionment variable TZ to ‘America/New_York’ (or equivalent)
 # A tibble: 3 × 2
-  change_direction               n
-  <chr>                      <int>
-1 Changed by <10%                6
-2 Decreased by >=10% in PA14   165
-3 Increased by >=10% in PA14   264
+  change_direction      n
+  <chr>             <int>
+1 Changed <10%        265
+2 Decreased by ≥10%    47
+3 Increased by ≥10%   123
+> editing_10pct_changes %>%
++   filter(abs(diff_PA14_minus_OP50) >= 10) %>%
++   nrow()
+[1] 170
 > changed_10pct_sites <- editing_10pct_changes %>%
-+   filter(abs(diff_PA14_minus_OP50) >= 0.10)
++   filter(abs(diff_PA14_minus_OP50) >= 10)
 > 
-> changed_10pct_sites
-# A tibble: 429 × 5
-   chr_pos       OP50  PA14 diff_PA14_minus_OP50 change_direction          
-   <chr>        <dbl> <dbl>                <dbl> <chr>                     
- 1 III_11961752  87.5 100                  12.5  Increased by >=10% in PA14
- 2 III_11961789  64.9  70.8                 5.91 Increased by >=10% in PA14
- 3 III_11961795  48.4  52.8                 4.37 Increased by >=10% in PA14
- 4 III_12159719  53.8  56.1                 2.34 Increased by >=10% in PA14
- 5 III_12159731  95.4  93.0                -2.44 Decreased by >=10% in PA14
- 6 III_12159742  91.6  95.5                 3.95 Increased by >=10% in PA14
- 7 III_12159771  74.0  85.3                11.3  Increased by >=10% in PA14
- 8 III_12159798  50.6  68.1                17.5  Increased by >=10% in PA14
- 9 III_12159805  66.7  61.8                -4.9  Decreased by >=10% in PA14
-10 III_12160127  79.0  85.6                 6.66 Increased by >=10% in PA14
-# ℹ 419 more rows
-# ℹ Use `print(n = ...)` to see more rows
 > write.csv(changed_10pct_sites,
-+           "sites_changed_by_10_percent_PA14_vs_OP50.csv",
++           "sites_changed_by_10percent.csv",
 +           row.names = FALSE)
+> changed_10pct_sites <- editing_10pct_changes %>%
++   filter(abs(diff_PA14_minus_OP50) >= 10)
+> 
+> write.csv(changed_10pct_sites,
++           "sites_changed_by_10percent.csv",
++           row.names = FALSE)
+> 
