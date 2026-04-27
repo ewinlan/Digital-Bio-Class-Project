@@ -69,7 +69,7 @@ done
 #!/bin/bash
 
 # Loop over all rmdup VCF files
-for vcf in *_27Aug_rmdup.vcf; do
+for vcf in *_rmdup.vcf; do
     # Get sample name without .vcf
     sample=$(basename "$vcf" .vcf)
 
