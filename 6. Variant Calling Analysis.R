@@ -55,36 +55,36 @@ wtpa14_vc = rbind(wtpa14_rep1_vc, wtpa14_rep2_vc) %>%
 # Use your final SAILOR site list here
 
 wtop50_vc %>%
-  filter(chr_pos %in% n2_sites_final) %>%
+  filter(chr_pos %in% op50_sites_list_final) %>%
   distinct(chr_pos) %>%
   nrow()
 
 # But, each replicate may not have a particular site, so group by replicate
 
 wtop50_vc %>%
-  filter(chr_pos %in% n2_sites_list_final) %>%
+  filter(chr_pos %in% op50_sites_list_final) %>%
   group_by(rep) %>%
   tally()
 
 # Create the table with only high confidence sites
 
 wtop50_vc_hc_sites = wtop50_vc %>%
-  filter(chr_pos %in% n2_sites_final)
+  filter(chr_pos %in% op50_sites_list_final)
 
 # Repeat for PA14; the site list stays the same
 
 wtpa14_vc %>%
-  filter(chr_pos %in% n2_sites_final) %>%
+  filter(chr_pos %in% op50_sites_list_final) %>%
   distinct(chr_pos) %>%
   nrow()
 
 wtpa14_vc %>%
-  filter(chr_pos %in% n2_sites_final) %>%
+  filter(chr_pos %in% op50_sites_list_final) %>%
   group_by(rep) %>%
   tally()
 
 wtpa14_vc_hc_sites = wtpa14_vc %>%
-  filter(chr_pos %in% n2_sites_final)
+  filter(chr_pos %in% op50_sites_list_final)
 
 # Do the variant sites found in OP50 and PA14 overlap?
 # We can only compare sites that appear in both conditions.
@@ -195,7 +195,6 @@ options(repr.plot.width = 5, repr.plot.height = 8)
 plot_variant_heatmap(vc_op50_pa14_final)
 
 ####### to identify sites that either increased or decreased by 10% #######
-
 editing_10pct_changes <- vc_op50_pa14_final %>%
 +   group_by(chr_pos, condition) %>%
 +   summarize(mean_editing = mean(per_variant, na.rm = TRUE),
@@ -215,23 +214,6 @@ editing_10pct_changes <- vc_op50_pa14_final %>%
 # A tibble: 3 × 2
   change_direction      n
   <chr>             <int>
-1 Changed <10%        265
-2 Decreased by ≥10%    47
-3 Increased by ≥10%   123
-> editing_10pct_changes %>%
-+   filter(abs(diff_PA14_minus_OP50) >= 10) %>%
-+   nrow()
-[1] 170
-> changed_10pct_sites <- editing_10pct_changes %>%
-+   filter(abs(diff_PA14_minus_OP50) >= 10)
-> 
-> write.csv(changed_10pct_sites,
-+           "sites_changed_by_10percent.csv",
-+           row.names = FALSE)
-> changed_10pct_sites <- editing_10pct_changes %>%
-+   filter(abs(diff_PA14_minus_OP50) >= 10)
-> 
-> write.csv(changed_10pct_sites,
-+           "sites_changed_by_10percent.csv",
-+           row.names = FALSE)
-> 
+1 Changed <10%        172
+2 Decreased by ≥10%    31
+3 Increased by ≥10%    44
