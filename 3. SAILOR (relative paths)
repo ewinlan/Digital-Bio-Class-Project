@@ -19,7 +19,7 @@ samtools merge adr2_merged.bam SRR23261282_pass_Aligned.sortedByCoord.out.bam SR
 
 # index merged adr-2 bam file
 
-
+samtools index adr2_merged.bam
 
 # in genome files directory, copy assembly genome file into sailor directory
 
@@ -79,6 +79,8 @@ snakemake \
     --bind /Class_Project/sailor/workflow_sailor \
     --bind /Class_Project/sailor/outputs" \
   -j1
+
+ADD COMAND FOR COPYING ANNOTATION FILES
 
 # run sailor annotation (do this for each individual file... example code of one of my files for this project below):
 python3 /Class_Project/sailor/workflow_sailor_annotation/annotator.sailor.py --gtf /Class_Project/genome_files/annotation.gtf --fwd /Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --rev /Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --wb /Class_Project/genome_files/c.elegans.WS275.annotation.final.bed --o /Class_Project/sailor/outputs/WT_PA14_SRR23261298.annotated.sites.csv
