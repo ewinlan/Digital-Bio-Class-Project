@@ -62,8 +62,8 @@ for bam in *.nodup.bam; do
     fi
 
     # Generate pileup and annotate DP4, ignore indels
-    bcftools mpileup -f "$ref" -a DP4 -I "$bam" | \
-    bcftools call -mv -Ov -o "$outfile"
+    bcftools mpileup -Ou -f "$ref" -a DP4 "$bam" | \
+    bcftools call -mv -A -Ov -o "$outfile"
 
     echo "Variants generated for $bam -> $outfile"
 done
@@ -80,7 +80,7 @@ for vcf in *.vcf; do
     logfile="${sample}_variant.log"
 
     # Run the python script with nohup in background
-    nohup python variant_updatedLHK073025.py \
+    nohup python variant_updatedEL080825.py \
         --v "$vcf" \
         --snp c.elegans.WS275.snps.nostrand.sorted.bed \
         --o "$outfile" > "$logfile" 2>&1 &
