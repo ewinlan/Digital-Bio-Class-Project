@@ -1,5 +1,7 @@
 #!/bin/bash
 
+unzip EW_required_files.zip
+
 # ssh into quartz, request compute node, and load class conda environment
 conda activate /N/scratch/chriscs/Public/Conda_032726_QUARTZ/envs/Db/
 
