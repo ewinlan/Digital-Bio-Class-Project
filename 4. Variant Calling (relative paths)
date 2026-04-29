@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd /Class_Project/sailor
 
 # in sailor directory
