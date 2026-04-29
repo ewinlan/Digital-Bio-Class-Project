@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # ssh into quartz, request compute node, change into slate or scratch
 # Minicona install
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
