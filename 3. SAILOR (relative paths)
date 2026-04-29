@@ -32,7 +32,7 @@ cp /N/project/HundleyLab/annotations/c.elegans.WS275.snps.nostrand.sorted.bed /N
 
 # also cp the sailor code into your working directory
 
-cp -r /N/project/HundleyLab/FLARE/workflow_sailor /N/slate/ewinlan/Class_Project
+cp -r /N/project/HundleyLab/FLARE/workflow_sailor /Class_Project/sailor
 
 # at this point, you should have your bam files (decide fif you need to merge them depending on your analysis. In this case, I merged the adr-2(-) replicates), the assembly genome files, and the sailor code.
 
@@ -80,7 +80,9 @@ snakemake \
     --bind /Class_Project/sailor/outputs" \
   -j1
 
-ADD COMAND FOR COPYING ANNOTATION FILES
+# copy sailor annotation file from Hundley lab project account
+
+cp -r /N/project/HundleyLab/FLARE/workflow_sailor_annotation /Class_Project/sailor 
 
 # run sailor annotation (do this for each individual file... example code of one of my files for this project below):
 python3 /Class_Project/sailor/workflow_sailor_annotation/annotator.sailor.py --gtf /Class_Project/genome_files/annotation.gtf --fwd /Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --rev /Class_Project/sailor/outputs/7_scored_outputs/SRR23261298_pass_Aligned.sortedByCoord.out.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --wb /Class_Project/genome_files/c.elegans.WS275.annotation.final.bed --o /Class_Project/sailor/outputs/WT_PA14_SRR23261298.annotated.sites.csv
