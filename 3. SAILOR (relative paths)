@@ -6,12 +6,12 @@ cd Class_Project
 
 mkdir -p sailor
 
-# in aligned reads director, copy indexed and regular BAM files into sailor directory
+# in aligned reads directory, copy indexed and regular BAM files into sailor directory
 
 cd aligned_reads
 
-cp *bam /Class_Project/sailor
-cp *bai /Class_Project/sailor
+cp *bam ../sailor
+cp *bai ../sailor
 
 # merge adr-2 bam files
 
@@ -25,8 +25,8 @@ samtools index adr2_merged.bam
 
 # in genome files directory, copy assembly genome file into sailor directory
 
-cd /Class_Project/genome_files
-cp assembly.fasta /Class_Project/sailor
+cd ../genome_files
+cp assembly.fasta ../sailor
 
 # cp a bed file of known c. elegans SNPS into your own sailor directory from /N/project/HundleyLab/annotations
 
@@ -40,7 +40,9 @@ cp -r /N/project/HundleyLab/FLARE/workflow_sailor /Class_Project/sailor
 
 # now, in the sailor directory, make a sailor output directory. 
 
-mkdir Class_Project/sailor/outputs
+cd sailor
+
+mkdir sailor/outputs
 
 # SAILOR is run by replacing variable names (file names, etc.) in a .json file that calls and runs the SAILOR script. We have the base .json, you just need to edit it to be specific for your analysis
 
@@ -75,11 +77,11 @@ snakemake \
   --configfile /Class_Project/sailor/cp_sailor.json \
   --use-singularity \
   --singularity-args "\
-    --bind /Class_Project \
-    --bind /Class_Project/genome_files \
-    --bind /Class_Project/sailor/workflow_sailor/scripts \
-    --bind /Class_Project/sailor/workflow_sailor \
-    --bind /Class_Project/sailor/outputs" \
+    --bind Class_Project \
+    --bind ..genome_files \
+    --bind ../sailor/workflow_sailor/scripts \
+    --bind ../sailor/workflow_sailor \
+    --bind ../sailor/outputs" \
   -j1
 
 # copy sailor annotation file from Hundley lab project account
