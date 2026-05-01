@@ -81,8 +81,8 @@ for vcf in *.vcf; do
     outfile="${sample}_variant.csv"
     logfile="${sample}_variant.log"
 
-    # Run the python script with nohup in background
-    nohup python variant_updatedEL080825.py \
+    # Run the python script --> if your are including EVERYTHING, not just variants, your files will be huge and this must be submitted as a job...
+    variant_updatedEL080825.py \
         --v "$vcf" \
         --snp c.elegans.WS275.snps.nostrand.sorted.bed \
         --o "$outfile" > "$logfile" 2>&1 &
