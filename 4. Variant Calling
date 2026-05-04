@@ -65,7 +65,7 @@ for bam in *.nodup.bam; do
 
     # Generate pileup and annotate DP4, ignore indels
     bcftools mpileup -Ou -f "$ref" -a DP4 "$bam" | \
-    bcftools call -mv -A -Ov -o "$outfile"
+    bcftools call -m -A -Ov -o "$outfile"
 
     echo "Variants generated for $bam -> $outfile"
 done
